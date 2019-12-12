@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>Hexo + Github Page 搭建个人博客（二）发布文章和url处理</title>
+      <link href="/hexo-publish-article.html"/>
+      <url>/hexo-publish-article.html</url>
+      
+        <content type="html"><![CDATA[<p>前面我们已经搭建好了我们的博客网站，现在我们来发布新的文章吧！</p><h2 id="新建文章"><a href="#新建文章" class="headerlink" title="新建文章"></a>新建文章</h2><p>新建文章，输入以下命令即可：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">hexo new &#39;文章标题&#39;</span></pre></td></tr></table></figure><p>执行完成后，可以在根目录下/source</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> hexo </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> hexo </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Hexo + Github Page 搭建个人博客（一）安装</title>
       <link href="/hexo-start.html"/>
       <url>/hexo-start.html</url>
