@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>img标签的alt和title</title>
+      <link href="/freeze.html"/>
+      <url>/freeze.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="img标签的alt和title属性"><a href="#img标签的alt和title属性" class="headerlink" title="img标签的alt和title属性"></a>img标签的alt和title属性</h2><p>在html的img标签中，有alt和title两个重要的属性。</p><ul><li><p>alt属性：</p><ul><li><p>如果图像没有下载或者加载失败，会用文字来代替图像显示。</p><p>  这一作用是为了给加载不出网页图片的用户提供图片信息，方便用户浏览网页，也方便维护网页。</p></li><li><p>搜索引擎可以通过这个属性的文字来抓取图片</p></li></ul></li><li><p>title属性：<br>*当网页上的图片被加载完成后，鼠标移动到上面去，会显示这个图片指定的属性文字，以对图片信息进行补充性说明。</p></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> html </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> html </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Object.freeze函数</title>
       <link href="/freeze.html"/>
       <url>/freeze.html</url>
