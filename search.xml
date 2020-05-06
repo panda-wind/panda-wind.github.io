@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>Object.freeze函数</title>
+      <link href="/freeze.html"/>
+      <url>/freeze.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="Object-freeze函数"><a href="#Object-freeze函数" class="headerlink" title="Object.freeze函数"></a>Object.freeze函数</h2><p>Object.freeze(),冻结函数，该方法用于冻结一个对象。<code>一个被冻结的对象将不能修改属性，删除已有属性或添加新的属性</code>。此外，<code>冻结一个对象之后，该对象的原型也不能被修改</code>。该方法的返回值为传入的对象。</p><p>看一个例子：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">var a &#x3D; &#123; age: 18 &#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">Object.freeze(a); &#x2F;&#x2F; &#123;age: 18&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">a.age &#x3D; 20;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">console.log(a); &#x2F;&#x2F; &#123;age: 18&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">a.name &#x3D; &#39;zs&#39;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">console.log(a); &#x2F;&#x2F; &#123;age: 18&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">delete a.age; &#x2F;&#x2F; false</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">console.log(a); &#x2F;&#x2F; &#123;age: 18&#125;</span></pre></td></tr></table></figure><p>同时冻结的对象的原型也不能被修改：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">var a &#x3D; &#123; age: 18 &#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">Object.freeze(a); &#x2F;&#x2F; &#123;age: 18&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">var b &#x3D; a;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">b.age &#x3D; 20;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">console.log(b); &#x2F;&#x2F; &#123;age: 18&#125;</span></pre></td></tr></table></figure><p>但是，Object.freeze()只是<code>浅冻结</code>，被冻结的对象并不总是不可变的：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">var a &#x3D; &#123; name: &#123; firstName: &#39;zhang&#39; &#125; &#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">Object.freeze(a);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">a.name.firstName &#x3D; &#39;wang&#39;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">console.log(a); &#x2F;&#x2F; &#123; name: &#123; firstName: &quot;wang&quot; &#125; &#125;</span></pre></td></tr></table></figure><p>最后，需要注意的是，<code>只要freeze之后，就不能解除了</code>，所以使用这个API需要谨慎</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> js </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> js </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Hexo + Github Page 搭建个人博客（二）发布文章和url处理</title>
       <link href="/hexo-publish-article.html"/>
       <url>/hexo-publish-article.html</url>
