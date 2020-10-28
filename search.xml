@@ -4,6 +4,44 @@
   
     
     <entry>
+      <title>React路由设置createBrowserHistory之后页面刷新报错问题解决</title>
+      <link href="/posts/2425023234/"/>
+      <url>/posts/2425023234/</url>
+      
+        <content type="html"><![CDATA[<h2 id="React路由设置createBrowserHistory之后页面刷新报错问题解决"><a href="#React路由设置createBrowserHistory之后页面刷新报错问题解决" class="headerlink" title="React路由设置createBrowserHistory之后页面刷新报错问题解决"></a>React路由设置createBrowserHistory之后页面刷新报错问题解决</h2><p><strong><em>问题</em></strong></p><p>使用browserHistory时页面刷新时控制台会报错：<code>Uncaught SyntaxError: Unexpected token &lt;</code></p><p><strong><em>解决办法</em></strong></p><p>在index.html中修改资源引入路径，使用绝对路径进行引入</p><p>例如：</p><p><img alt="修改前" data-src="/posts/2425023234/before.png" class="lazyload"></p><p>使用绝对路径引入:</p><p><img alt="修改后" data-src="/posts/2425023234/after.png" class="lazyload"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> React </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> React </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>手写防抖、节流</title>
+      <link href="/posts/2442577863/"/>
+      <url>/posts/2442577863/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>npm 依赖包版本号~和^的区别</title>
       <link href="/posts/2795930560/"/>
       <url>/posts/2795930560/</url>
