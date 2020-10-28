@@ -71,9 +71,21 @@
       <link href="/posts/1750268648/"/>
       <url>/posts/1750268648/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h2 id="Scrtipt标签的defer和async"><a href="#Scrtipt标签的defer和async" class="headerlink" title="Scrtipt标签的defer和async"></a>Scrtipt标签的defer和async</h2><p>defer和async是script标签的两个属性，用于在不阻塞页面文档解析的前提下，控制脚本的下载和执行。为什么设计这两个属性呢？</p><p><strong><em>为什么给要script标签添加 async 或 defer？</em></strong></p><p>首先需要了解一下页面的加载和渲染过程：</p><ol><li>浏览器通过http协议请求服务器，获取HTML文档并开始从上到下解析，构建DOM;</li><li>在构建DOM过程中，如果遇到外联的样式声明和脚本声明，则暂停文档解析，创建新的网络连接，并开始下载样式文件和脚本文件;</li><li>样式文件下载完成后，构建CSSDOM;脚本文件下载完成后，解析并执行，然后继续解析文档并构建DOM;</li><li>完成文档解析后，将DOM和CSSDOM进行关联和映射，最后将视图渲染到浏览器窗口。在这个过程中，脚本文件的下载和执行是与文档解析同步进行的，也就是说，<code>脚本的解析和执行会阻塞文档的解析</code>，如果控制不好，在用户体验上就会造成一定程度的影响。</li></ol><p>为了避免js和css会阻塞文档解析，比较流行的做法是<code>样式放顶部，脚本放底部</code>，但是这种做法并没有从根本上解决问题。实际上，并不是所有的脚本对用户体验都是同等的重要，能否有一种解决方法，可以尽可能的异步加载那些不那么重要的脚本。</p><p><strong><em>defer和async的作用</em></strong></p><p><code>defer</code>和<code>async</code>属性，就是用来告诉浏览器哪些脚本是需要异步加载的。这两个属性都告诉浏览器，在加载脚本的同时继续解析HTML，并在脚本加载完之后再执行。这样脚本下载就不会阻塞DOM构建和页面渲染了。结果就是，用户可以在所有的脚本加载完成之前就能看到页面了。</p><p><strong><em>defer和async的区别</em></strong> </p><p>两者的区别在于<code>执行时间不同</code>。</p><ol><li><p>默认引用script： </p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&lt;script type&#x3D;&quot;text&#x2F;javascript&quot; src&#x3D;&quot;x.min.js&quot;&gt;&lt;&#x2F;script&gt;</span></pre></td></tr></table></figure><p>当浏览器遇到script标签时，<code>文档的解析将会停止，然后立即下载脚本并执行，脚本执行完毕后在解析文档</code>。</p></li><li><p>async模式：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&lt;script type&#x3D;&quot;text&#x2F;javascript&quot; src&#x3D;&quot;x.min.js&quot; async&#x3D;&quot;async&quot;&gt;&lt;&#x2F;script&gt;</span></pre></td></tr></table></figure><p>当浏览器遇到script标签时，<code>文档解析不会停止而是会继续往下解析，同时异步下载脚本。脚本下载完成后会立即执行脚本，此时会中断文档的解析过程，直到脚本执行完毕</code>。</p></li><li><p>defer模式：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&lt;script type&#x3D;&quot;text&#x2F;javascript&quot; src&#x3D;&quot;x.min.js&quot; defer&#x3D;&quot;defer&quot;&gt;&lt;&#x2F;script&gt;</span></pre></td></tr></table></figure><p>当浏览器遇到script标签时，<code>文档解析不会停止而是会继续往下解析，同时异步下载脚本。等到文档解析完毕后，脚本才会执行</code>。</p></li></ol><blockquote><p>所以async和defer的区别就是，async是脚本下载完毕后会立即执行，defer是等到文档解析完成后再执行脚本。</p></blockquote><p><strong><em>总结</em></strong></p><ul><li><p>相同 </p><ol><li>都是异步的加载脚本文件，加载时不会阻塞DOM渲染</li><li>都是在页面load之前执行</li><li>对于内嵌脚本无效。即缺少src属性。</li></ol></li><li><p>不同   </p><ol><li>async属性的脚本无法确定是在DOMContentLoaded之前还是之后执行。defer属性的脚本一定是在DOMContentLoaded之前执行</li><li>async属性的脚本并不一定按照顺序执行（先加载完成的先执行）。defer属性的脚本会按照顺序执行</li></ol></li></ul>]]></content>
       
       
+      <categories>
+          
+          <category> JavaScript </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> JavaScript </tag>
+            
+        </tags>
       
     </entry>
     
