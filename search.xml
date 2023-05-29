@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>sendBeacon-实现数据上报</title>
+      <link href="/posts/1232999462/"/>
+      <url>/posts/1232999462/</url>
+      
+        <content type="html"><![CDATA[<h2 id="sendBeacon-应用场景"><a href="#sendBeacon-应用场景" class="headerlink" title="sendBeacon 应用场景"></a>sendBeacon 应用场景</h2><p>Navigator.sendBeacon() 是一个用于异步发送小型数据包的方法，它允许避免延迟敏感数据的丢失。</p><p>此方法旨在用户跳转或关闭一个页面后发送数据。在这种情况下，浏览器可能即将卸载页面而选择不发生异步的<code>XMLHttpRequest</code>请求。</p><h2 id="以往数据上报的方式"><a href="#以往数据上报的方式" class="headerlink" title="以往数据上报的方式"></a>以往数据上报的方式</h2><p>在 sendBeacon 出现之前，想要在页面离开前把数据发送出去，一般是延长页面的卸载时间，来及时发送数据。一般是在 <code>unload/beforeunload/pagehide</code> 方法里执行以下几种策略：</p><ol><li>通过使用阻塞的同步的 ajax 方法来发送数据;</li><li>创建一个 img 元素 + setTimeout 延迟来发送时刻;</li><li>创建一个无操作的一段时间循环;</li></ol><p>以上方法确实能延迟页面的卸载，但缺点是：一是会导致下一页的跳转变慢，给用户带来不好的体验；二是不稳定，如果请求返回比较慢，可能一样会被浏览器取消请求。</p><h2 id="使用-sendBeacon-实现数据上报"><a href="#使用-sendBeacon-实现数据上报" class="headerlink" title="使用 sendBeacon 实现数据上报"></a>使用 sendBeacon 实现数据上报</h2><p>如果使用 sendBeacon() 方法，虽然它也是异步发出请求，但是它的请求与当前页面线程脱钩，作为浏览器进程的任务，因此可以保证会把数据发出去，不拖延卸载流程。</p><h2 id="sendBeacon-特点"><a href="#sendBeacon-特点" class="headerlink" title="sendBeacon 特点"></a>sendBeacon 特点</h2><ol><li><p>只支持 post 方法</p></li><li><p>data 只支持 <code>ArrayBuffer</code>、<code>ArrayBufferView</code>、<code>Blob</code>、<code>DOMString</code>、<code>FormData</code>、<code>URLSearchParams</code> 这几种类型</p></li></ol><p>如果想支持 json 格式的内容怎么办？</p><p>可以使用 Blob 类型来实现。把 Blob 内容的格式类型设置为 json 格式就可以，看如下代码：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">const headers &#x3D; &#123; type: &#39;application&#x2F;json&#39; &#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">const blob &#x3D; new Blob([JSON.stringify(&#123;a:1&#125;)], headers);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">window.navigator.sendBeacon(url, blob);</span></pre></td></tr></table></figure><ol start="3"><li>支持跨域</li></ol><p>如果请求的 content-type 类型是<code>application/x-www-form-urlencoded</code>, <code>multipart/form-data</code>, <code>text/plain</code>，它不需要一个 option 预检来检查 cros，所以可以跨域。</p><p>如果请求的 content-type 不是这 3 种类型之一，那就会产生一个 option 预检请求，这时候需要添加设置才能支持跨域。</p><ol start="4"><li>没有回调函数，返回值为 true/false</li></ol><p>sendBeacon 返回 true 表示的是请求排队成功，等待下一步的执行。（下一步指的是啥，看下面的底层实现），返回 false 表示请求排队失败。</p><ol start="5"><li>兼容性就还可以，目前仅 IE 不支持</li></ol><h2 id="底层实现"><a href="#底层实现" class="headerlink" title="底层实现"></a>底层实现</h2><p>sendBeacon 底层是通过 fetch 实现的。</p><p>在执行 sendBeacon 时，会按照以下 3 个步骤执行：</p><ol><li>检测数据量大小</li></ol><p>如果要发送的数据量大小超过限制则返回 false，否则进行下一步。</p><p>数据量大小限制：Chrome40-86 约 65536 个字符，数据大小的限制 64kb，这些是浏览器层面的限制，不同的浏览器可能还存在细微的差别。</p><ol start="2"><li>检测 mimeType 类型</li></ol><p>如果 mimeType 值不是 CORS 安全列出的请求标头值且是跨域的，则直接返回 false，否则进行下一步。</p><ol start="3"><li>发起 fetch 请求 它构造的 fetch 请求，参数如下：</li></ol><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">fetch(&#39;&#x2F;xxx&#39;,&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">  method: &#39;POST&#39;,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">  url:&#39;&#39;,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">  keep-alive: true,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">  body:transmittedData,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">  mode:corsMode,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">  credentials: &#39;include&#39;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">&#125;);</span></pre></td></tr></table></figure><p>可以注意到，Fetch API 支持一个 keep-alive 选项，</p><p>当设置为 true 时，保证不管发送请求的页面关闭与否，请求都会持续到结束。</p><p>credentials 设置为 include，即使是跨域调用，也总是携带 cookie。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> JavaScript </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> JavaScript </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>手写一个支持回调的 useState</title>
       <link href="/posts/424623501/"/>
       <url>/posts/424623501/</url>
