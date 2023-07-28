@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>pnpm是如何对npm和yarn进行降维打击的</title>
+      <link href="/posts/2129100086/"/>
+      <url>/posts/2129100086/</url>
+      
+        <content type="html"><![CDATA[<h2 id="pnpm-是如何对-npm-和-yarn-进行降维打击的"><a href="#pnpm-是如何对-npm-和-yarn-进行降维打击的" class="headerlink" title="pnpm 是如何对 npm 和 yarn 进行降维打击的"></a>pnpm 是如何对 npm 和 yarn 进行降维打击的</h2><p>经常听到 pnpm 比 npm 和 yarn 强大很多，但不知道具体好在哪里，今天一起看下。</p><p>按照前端包管理工具的发展历史，先从 npm2 开始讲起：</p><h3 id="npm2"><a href="#npm2" class="headerlink" title="npm2"></a>npm2</h3><hr><p>找个目录，执行下<code>npm init -y</code>，快速创建一个 package.json。</p><p>然后值<code>npm install express</code>，那么 express 包和它的依赖都会下载下来：</p><p><img alt="npm2-1.png" data-src="/posts/2129100086/npm2-1.png" class="lazyload"></p><p>展开 express，它也有 node_modules：</p><p><img alt="npm2-2.png" data-src="/posts/2129100086/npm2-2.png" class="lazyload"></p><p>再展开几层，每个依赖都有自己的 node_modules：</p><p><img alt="npm2-3.png" data-src="/posts/2129100086/npm2-3.png" class="lazyload"></p><p>也就是说 npm2 的 node_modules 是嵌套的。显而易见这样有个很大的问题就是，多个包之间难免有公共的依赖，这样嵌套的话会导致同样的依赖被复制很多次，会占据比较大的磁盘空间。还有个更致命的问题是 windows 系统的文件路径最长是 260 多个字符，这样嵌套的话可能会超过限制。</p><p>于是 yarn 就诞生了。</p><h3 id="yarn"><a href="#yarn" class="headerlink" title="yarn"></a>yarn</h3><hr><p>yarn 是如何解决依赖重复很多次，嵌套路径过长的问题呢？</p><p>答案是铺平。(npm 后来升级到 3 之后也是采用铺平的方案。)</p><p>所有的依赖不再一层层嵌套了，而是全部铺平在同一层，这样就解决了依赖重复多次的问题了，自然就解决了路径过长的问题。</p><p>但是有时候我们会发现还有会有嵌套的情况出现，为什么呢？</p><p>因为一个包可能有多个版本的，提升只能提升一个，所以后面在遇到相同包的不同版本，依然还是用嵌套的方式。</p><p>于是 yarn 还实现了 yarn.lock 来锁定版本的功能。(后来 npm 也实现了)</p><p>这种方案就没有问题了吗？</p><p>并不是，这种方案产生一个新的问题，那就是<code>幽灵依赖</code>，也就是你明明没有在 dependencies 里的依赖，但在代码里却可以 require 进来。</p><p>这个很容易理解，因为都平铺了嘛，那依赖的依赖自然也是能找到的。</p><p>但是这样有个隐患，因为这种幽灵依赖并没有显示的依赖，万一哪天别的包不依赖这个包了，那你的代码就不能跑了，因为你依赖的这个包现在不会安装了。同时还有一个问题，就是上面提到的依赖包有多个版本的问题，只会提升一个版本，那其他版本的包还是会复制很多次，依然有浪费磁盘空间的问题。</p><p>最后，pnpm 登场了。</p><h3 id="pnpm"><a href="#pnpm" class="headerlink" title="pnpm"></a>pnpm</h3><hr><p>回想下 npm 和 yarn 为什么要做扁平化？不就是因为相同的依赖被复制很多次吗？那如果不复制呢，那是通过 link。</p><blockquote><p>简单介绍下 link, 也就是软硬链接，这是操作系统提供的机制，硬链接就是同一个文件的不同引用，而软链接是新建一个文件，文件内容指向另一个路径。这两种使用起来是差不多的。</p></blockquote><p>所以如果不复制文件，只在全局保存一份包的内容，其余的地方都通过 link 链接过去呢？</p><p>当我们使用 pnpm 按照依赖时，会看到控制台打印这样一句话：</p><p><img alt="pnpm-1.png" data-src="/posts/2129100086/pnpm-1.png" class="lazyload"></p><p>包是从全局 store 硬链接到虚拟 store 的，这里的虚拟 store 就是 node_modules/.pnpm：</p><p><img alt="pnpm-2.png" data-src="/posts/2129100086/pnpm-2.png" class="lazyload"></p><p>我们会发现不是扁平化了，只有 express，没<br>有幽灵依赖。</p><p>展开.pnpm 看下：</p><p><img alt="pnpm-3.png" data-src="/posts/2129100086/pnpm-3.png" class="lazyload"></p><p>所有依赖都在这里铺平了，都是从全局 store 硬链接过来的，然后包和包之间的依赖关系是通过软链接组织的。</p><p>比如 .pnpm 下的 expresss，这些都是软链接:</p><p><img alt="pnpm-4.png" data-src="/posts/2129100086/pnpm-4.png" class="lazyload"></p><p>也就是说，所以的依赖都从全局 store 硬链接到 node_modules/.pnpm 下，然后之间再通过软链接相互依赖。</p><p>最后回过头看一下，为什么 pnpm 如此优秀呢？</p><ol><li>首先是节省磁盘空间，一个包全局只有一份，剩下的都是 link 链接</li><li>其次是快，因为不再是复制的方式而是链接</li></ol><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><hr><ol><li>npm2 是通过嵌套的方式关联 node_modules 的，这样会有依赖重复多次的问题。</li><li>yarn 和 npm3+ 是通过铺平的方式关联依赖的，同时使用了 yarn.lock 的方式管理，但无法解决多版本包还是会嵌套依赖的情况，同时会引出了幽灵依赖的隐患。</li><li>pnpm 是通过软硬链接的方式，不再是复制了，都是从全局的 store 硬链接到 node_modules/.pnpm，然后在通过软链接来组织依赖关系，这样大大节省了磁盘空间，并且速度更块，完胜 yarn 和 npm，pnpm 就是凭借这个对 npm 和 yarn 降维打击的。</li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> npm </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> npm </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>sendBeacon-实现数据上报</title>
       <link href="/posts/1232999462/"/>
       <url>/posts/1232999462/</url>
