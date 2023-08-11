@@ -108,7 +108,7 @@
       <link href="/posts/708475590/"/>
       <url>/posts/708475590/</url>
       
-        <content type="html"><![CDATA[<h2 id="SSR-介绍"><a href="#SSR-介绍" class="headerlink" title="SSR 介绍"></a>SSR 介绍</h2><h3 id="什么是-SSR"><a href="#什么是-SSR" class="headerlink" title="什么是 SSR"></a>什么是 SSR</h3><p>SSR 全称是<code>Server Side Render</code>，即服务端渲染，是指一种传统的渲染方式，就是在浏览器请求页面 url 的时候，服务端将我们需要的 HTML 文本组装好，并返回给浏览器，这个 HTML 文本被浏览器解析之后，不需要经过 JavaScript 脚本的执行，即可直接构建出希望的 DOM 树并展示到页面上。</p><p>SSR 有两种模式，单页面模式和多页面模式，第一种是后端首次渲染的单页面应用，第二种是完全使用后端路由的后端模板渲染模式，他们区别在于使用后端路由的程度。</p><p>与之相对的是<code>CSR(Client Side Render)</code>，是一种目前流行的渲染方式，它依赖的是运行在客户端的 JS，用户首次发送请求只能得到小部分的指引下 HTML 代码。第二次请求将会请求更多包含 HTML 字符串的 JS 文件。</p><h3 id="为什么需要-SSR"><a href="#为什么需要-SSR" class="headerlink" title="为什么需要 SSR"></a>为什么需要 SSR</h3><p>目前前端流行的框架大多是适用于构建 SPA(单页面应用程序)，在 SPA 这个模型中，是通过动态的重写页面的部分与用户交互，而避免过多的数据交换，响应速度自然相对</p>]]></content>
+        <content type="html"><![CDATA[<h2 id="SSR-介绍"><a href="#SSR-介绍" class="headerlink" title="SSR 介绍"></a>SSR 介绍</h2><h3 id="什么是-SSR"><a href="#什么是-SSR" class="headerlink" title="什么是 SSR"></a>什么是 SSR</h3><p>SSR 全称是<code>Server Side Render</code>，即服务端渲染，是指一种传统的渲染方式，就是在浏览器请求页面 url 的时候，服务端将我们需要的 HTML 文本组装好，并返回给浏览器，这个 HTML 文本被浏览器解析之后，不需要经过 JavaScript 脚本的执行，即可直接构建出希望的 DOM 树并展示到页面上。</p><p>SSR 有两种模式，单页面模式和多页面模式，第一种是后端首次渲染的单页面应用，第二种是完全使用后端路由的后端模板渲染模式，他们区别在于使用后端路由的程度。</p><h3 id="解决了什么问题"><a href="#解决了什么问题" class="headerlink" title="解决了什么问题"></a>解决了什么问题</h3><p>-</p>]]></content>
       
       
       <categories>
