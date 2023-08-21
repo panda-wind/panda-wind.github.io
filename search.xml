@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>从浏览器的重绘、重排和合成角度谈性能优化</title>
+      <link href="/posts/2208892743/"/>
+      <url>/posts/2208892743/</url>
+      
+        <content type="html"><![CDATA[<h2 id="从浏览器的重绘、重排角度谈性能优化"><a href="#从浏览器的重绘、重排角度谈性能优化" class="headerlink" title="从浏览器的重绘、重排角度谈性能优化"></a>从浏览器的重绘、重排角度谈性能优化</h2><h3 id="重排"><a href="#重排" class="headerlink" title="重排"></a>重排</h3><h4 id="什么是重排"><a href="#什么是重排" class="headerlink" title="什么是重排"></a>什么是重排</h4><p>重排是指当页面的<code>布局</code>和<code>几何属性</code>发生变化时，浏览器需要重新计算元素的位置和大小。这个过程涉及到整个文档树的重新布局，因此是非常耗时的操作，频繁的重排会导致页面的卡顿和响应时间延长</p><h5 id="常见会导致重排的行为和操作"><a href="#常见会导致重排的行为和操作" class="headerlink" title="常见会导致重排的行为和操作"></a>常见会导致重排的行为和操作</h5><ol><li>添加或删除可见的 DOM 元素</li><li>修改元素的位置属性，如 top, left等</li><li>页面初始化加载时，以及响应式布局变化时</li><li>改变页面布局，如宽高、内外边距、浮动等</li><li>改变字体</li><li>滚动页面</li></ol><p>怎么确定是否产生重排了呢？在浏览器中打开开发者工具里的 permance，点击录制，然后随机改变页面上的某些元素的宽高，内外边距等，然后停止录制，看到 Call Tree 里有 layout 就说明触发了浏览器重排。</p><h5 id="优化技巧"><a href="#优化技巧" class="headerlink" title="优化技巧"></a>优化技巧</h5><ol><li>避免频繁访问或修改布局属性，尽量一次性获取或修改：<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">div.style.cssText = 'width: 50%; height: 10vh; background-color: #bbb';</span></pre></td></tr></table></figure></li><li>使用 css3 动画替代 js 动画，因为前者通常能利用合成来避免重排</li><li>将频繁访问的元素设置为绝对定位或固定定位，使其脱离文档流，以减少对其他元素布局的影响</li><li>使用虚拟 DOM，减少实际 DOM 操作</li></ol><h3 id="重绘"><a href="#重绘" class="headerlink" title="重绘"></a>重绘</h3><h4 id="什么是重绘"><a href="#什么是重绘" class="headerlink" title="什么是重绘"></a>什么是重绘</h4><p>重绘是指元素的<code>外观属性（如颜色、背景等）</code>发生变化时，浏览器会重新绘制这些元素。与重排不同的时，重绘不会改变元素的布局，只是改完元素的外观。尽管重绘的代价相对较小，但仍然需要消耗一定的性能。</p><h4 id="常见导致重排的行为和操作"><a href="#常见导致重排的行为和操作" class="headerlink" title="常见导致重排的行为和操作"></a>常见导致重排的行为和操作</h4><ol><li>改变元素的颜色、背景、阴影等视觉样式</li><li>设置文本内容或字体样式</li><li>单独使用 transform、 opacity 来实现动画效果</li></ol><p>怎么确定是否产生重绘了呢？同样是在浏览器中打开开发者工具里的 permance，点击录制，然后随机改变页面上的某些元素的颜色，然后停止录制，看到 Call Tree 里有 Paint 就说明触发了浏览器重绘。</p><h4 id="优化技巧-1"><a href="#优化技巧-1" class="headerlink" title="优化技巧"></a>优化技巧</h4><ol><li>合并多次样式改变，避免重复重绘</li><li>使用 css3 的 transform 和 opacity 属性，它们能够在不引起重绘的情况下改变元素外观</li><li>对动画使用 will-change 提高合成层的创建效率</li></ol><h3 id="合成"><a href="#合成" class="headerlink" title="合成"></a>合成</h3><h4 id="什么是合成"><a href="#什么是合成" class="headerlink" title="什么是合成"></a>什么是合成</h4><p>合成是<code>将多个图层合成为最终的屏幕显示</code>。现代浏览器利用计算机的 GPU 硬件加速来进行合成，合成的优化可以显著提高页面的渲染性能，减少对 CPU 的压力。</p><h4 id="启用合成层的一些方法"><a href="#启用合成层的一些方法" class="headerlink" title="启用合成层的一些方法"></a>启用合成层的一些方法</h4><ol><li><p>使用硬件加速，将部分图层委托给 GPU 处理</p></li><li><p>利用图层的概念，将独立于布局的元素分层，使得只有特定图层的变化会触发合成，而不会引起重绘或重排</p></li><li><p>使用 will-change 属性明确声明哪些属性将会发生变化，帮助浏览器进行优化</p><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">  <span class="attribute">will-change</span>: transform;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">:hover</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">  <span class="attribute">transform</span>: <span class="built_in">scale</span>(1.1);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure></li><li><p>对 3D transform 进行动画</p><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">  <span class="attribute">animation</span>: rotate <span class="number">1s</span> linear infinite;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">@<span class="keyword">keyframes</span> rotate &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">  100% &#123; </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    <span class="attribute">transform</span>: <span class="built_in">rotateY</span>(360deg); </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure></li><li><p>对元素设置 opacity 小于1</p></li><li><p>对元素设置 video、canvas、 WebGL 等标签</p></li></ol><p>总的来说，能使用 css 的地方就别使用 js，这是合成层优化重排、重绘的根本。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 浏览器 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 浏览器 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>pnpm是如何对npm和yarn进行降维打击的</title>
       <link href="/posts/2129100086/"/>
       <url>/posts/2129100086/</url>
