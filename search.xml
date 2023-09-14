@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>盘点几种埋点上报方式</title>
+      <link href="/posts/2055180203/"/>
+      <url>/posts/2055180203/</url>
+      
+        <content type="html"><![CDATA[<h2 id="盘点几种埋点上报方式"><a href="#盘点几种埋点上报方式" class="headerlink" title="盘点几种埋点上报方式"></a>盘点几种埋点上报方式</h2><p>常见的埋点上报方式有<code>ajax</code>,<code>img</code>和<code>navigator.sendBeacon</code>三种，下面介绍下这三种方式</p><h2 id="基于ajax的埋点上报"><a href="#基于ajax的埋点上报" class="headerlink" title="基于ajax的埋点上报"></a><strong><em>基于ajax的埋点上报</em></strong></h2><p>因为埋点上报实际上就是对关键数据上报，需要和服务端交互，所以前端可以和后端约定好一个接口通过ajax进行上报。</p><p><strong><strong>缺点</strong></strong><br>通过ajax请求上报难免会遇到跨域问题，而且如果ajax配置不正确还可能会被浏览器拦截，因为这种方式不太推荐。</p><h2 id="基于img的埋点上报"><a href="#基于img的埋点上报" class="headerlink" title="基于img的埋点上报"></a><strong><em>基于img的埋点上报</em></strong></h2><p>上面说到的ajax上报可能会遇到跨域问题，这里我们可以使用一些支持跨域的标签去实现上报功能。</p><p><code>script,link,img就是最好的用于实现上报的标签</code>。</p><p>其中推荐使用<code>img</code>标签</p><p><strong><strong>script和link的缺陷</strong></strong><br>因为埋点上报涉及到请求，所以我们需要保证<code>script</code>或<code>link</code>标签的src可以正常请求。但会发现，创建一个<code>script</code>或<code>link</code>标签，如果不挂在在页面上，并不会发起请求。</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a = docment.createElement(<span class="string">'script'</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">a.src = <span class="string">'xxx'</span>;</span></pre></td></tr></table></figure><p>只有挂载到页面上时才会请求。</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.body.appendChild(a);</span></pre></td></tr></table></figure><p>对于需要频繁数据上报的埋点而言，这样会反复操作dom对页面渲染性能造成影响，而且加载 js、css 资源还会阻塞页面渲染，所以<code>script</code>和<code>link</code>标签显然并不合适。</p><p><strong><strong>img标签的优势</strong></strong><br>使用img标签加载就不需要挂载到页面上,<code>new Image</code>创建图片后再设置<code>src</code>就可以请求图片。</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> img = <span class="keyword">new</span> Image();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">img.src = <span class="string">'xxx'</span>;</span></pre></td></tr></table></figure><p><strong><strong>总结</strong></strong></p><ol><li>使用 img 标签不需要挂载到页面上，避免了反复操作造成对页面性能的影响</li><li>img 的加载不会阻塞 html 解析</li><li>img 兼容性好</li><li>通常 img 上报使用 gif 图，合法的 gif 只需要 43 个字节</li></ol><p><strong><em>基于Navigator.sendBeacon的埋点上报</em></strong></p><p>Navigator.sendBeacon 方法可通过 HTTP POST 将少量数据异步传输到服务器上。</p><p><strong><strong>优势</strong></strong></p><ol><li>相较于 img 标签，使用 Navigator.sendBeacon 会更规范，数据传输上传输类型更多</li><li>异步的，不会影响到下一个页面的跳转，能保证数据发送出去</li><li>支持跨域</li></ol><p><strong><em>总结</em></strong></p><ol><li>埋点上报总共有 ajax、img、Navigator.sendBeacon 三种方式， 其中不推荐使用 ajax</li><li>img 的兼容性最好</li><li>最合适的方案是Navigator.sendBeacon，不仅支持跨域，且是异步，不会影响页面卸载，作为浏览器的任务，可以保证将数据发送出去。</li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 其他 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 其他 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>从浏览器的重绘、重排和合成角度谈性能优化</title>
       <link href="/posts/2208892743/"/>
       <url>/posts/2208892743/</url>
