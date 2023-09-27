@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>一道谷歌面试题-扔鸡蛋</title>
+      <link href="/posts/2620791141/"/>
+      <url>/posts/2620791141/</url>
+      
+        <content type="html"><![CDATA[<h2 id="一道谷歌面试题-扔鸡蛋"><a href="#一道谷歌面试题-扔鸡蛋" class="headerlink" title="一道谷歌面试题-扔鸡蛋"></a>一道谷歌面试题-扔鸡蛋</h2><h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>你有2颗鸡蛋，从100层数扔下去，需要以最少的尝试次数来判断出哪一层是鸡蛋的安全层。没有摔碎的鸡蛋可以重复使用。</p><h3 id="解法1-简单粗暴"><a href="#解法1-简单粗暴" class="headerlink" title="解法1: 简单粗暴"></a>解法1: 简单粗暴</h3><p>先来个最简单粗暴的解法</p><p>假设我们只有一颗鸡蛋，从1层开始，逐层试探，直到摔碎为止，显然最糟糕的情况下这种需要100次。</p><h3 id="解法2-常规二分"><a href="#解法2-常规二分" class="headerlink" title="解法2: 常规二分"></a>解法2: 常规二分</h3><p>我们有2颗鸡蛋，可能很多人立马会想到二分法。</p><p>我们先从第50层开始试，如果没碎就到75层，碎了就到25层，逐步缩小范围。</p><p>这种解法显然尝试次数很少，可以迅速找到目标楼层，但忽略了一个问题，题目里说明了我们只有2颗鸡蛋，若要是还没缩小到目标所在范围就全碎了那就没机会了。</p><h3 id="解法3-均衡切割"><a href="#解法3-均衡切割" class="headerlink" title="解法3: 均衡切割"></a>解法3: 均衡切割</h3><p>虽然二分不完美，但思路是对的，只是分割的太粗糙了，我们可以再细致下分割。</p><p>我们可以将100层楼分为10个区间，每个区间长为10，每个区间内有10个元素。 </p><p>然后第一个鸡蛋从小到大用来确定目标楼层所在区间，第二个鸡蛋再从小到大从10个元素内找到目标楼层。</p><p><img alt="1.png" data-src="/posts/2620791141/1.png" class="lazyload"></p><h3 id="解法4-微妙平衡"><a href="#解法4-微妙平衡" class="headerlink" title="解法4: 微妙平衡"></a>解法4: 微妙平衡</h3><p>解法3看起来已经很完美了。但我们仔细想想就会发现个问题，如果目标楼层越高，第1颗鸡蛋尝试次数越多，而第2颗鸡蛋尝试次数总是一样的。</p><p>这样的切割方案对大数不公平。</p><p>所以我们要找到一个不均与的切割方法，可以使得，当目标楼层在比较低的楼层时，第1颗鸡蛋尝试次数多一点，而当目标楼层在比较高的楼层时，第2颗鸡蛋尝试次数少一点。</p><p>就是要用第二颗鸡蛋尝试次数的减少来弥补第一颗鸡蛋需要尝试次数的增加，此消彼长，达到总体的平衡。 </p><p>每增加1个区间时，区间内的元素数量减少1，也就是假设第一个区间有 X 层，第二个区间少一层，是 X-1 层，以此类推，我们得到公式：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">X + (X-1) + (X-2) + (X-3) + ... + 1 &gt;&#x3D; 100</span></pre></td></tr></table></figure><p>这不就是等差数列求和公式吗？</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">X(X+1)&#x2F;2&gt;&#x3D;100</span></pre></td></tr></table></figure><p>这里我们向上取整得出 X 等于14。</p><p>于是我们可以得出下图</p><p><img alt="2.png" data-src="/posts/2620791141/2.png" class="lazyload"></p><p>用这个方法，总次数一定不会超过14次。</p><p>因为最高安全楼层越高，第一颗鸡蛋的尝试次数也就越多，但第二颗鸡蛋的尝试次数随之越来越少，两者始终维持着一种微妙的平衡，最后总的尝试次数波动也不会太大。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 其他 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 面试题 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>使用 Web Worker 实现文件分片</title>
       <link href="/posts/4246034397/"/>
       <url>/posts/4246034397/</url>
