@@ -229,31 +229,6 @@
     
     
     <entry>
-      <title>SSR介绍</title>
-      <link href="/posts/708475590/"/>
-      <url>/posts/708475590/</url>
-      
-        <content type="html"><![CDATA[<h2 id="SSR-介绍"><a href="#SSR-介绍" class="headerlink" title="SSR 介绍"></a>SSR 介绍</h2><h3 id="什么是-SSR"><a href="#什么是-SSR" class="headerlink" title="什么是 SSR"></a>什么是 SSR</h3><p>SSR 全称是<code>Server Side Render</code>，即服务端渲染，是指一种传统的渲染方式，就是在浏览器请求页面 url 的时候，服务端将我们需要的 HTML 文本组装好，并返回给浏览器，这个 HTML 文本被浏览器解析之后，不需要经过 JavaScript 脚本的执行，即可直接构建出希望的 DOM 树并展示到页面上。</p><p>SSR 有两种模式，单页面模式和多页面模式，第一种是后端首次渲染的单页面应用，第二种是完全使用后端路由的后端模板渲染模式，他们区别在于使用后端路由的程度。</p><h3 id="解决了什么问题"><a href="#解决了什么问题" class="headerlink" title="解决了什么问题"></a>解决了什么问题</h3><p>-</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> JavaScript </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> JavaScript </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>js 参数按值传递</title>
       <link href="/posts/3590049051/"/>
       <url>/posts/3590049051/</url>
@@ -409,31 +384,6 @@
       <url>/posts/158612386/</url>
       
         <content type="html"><![CDATA[<h2 id="一道有趣的JS存储题"><a href="#一道有趣的JS存储题" class="headerlink" title="一道有趣的JS存储题"></a>一道有趣的JS存储题</h2><p><strong><em>从一道题目开始</em></strong></p><p>首先看一道经典的关于JS存储的题目：</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = &#123;<span class="attr">n</span>:<span class="number">1</span>&#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">a.x = a = &#123;<span class="attr">n</span>:<span class="number">2</span>&#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(a.x);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(a);·</span></pre></td></tr></table></figure><p>想必大家心中都有答案了 … 但结果很显然是有趣的：</p><p><img alt="output.png" data-src="/posts/158612386/output.png" class="lazyload"></p><p>怎么会是undefined？不是赋值了吗？接下来仔细分析一下：</p><p><strong><em>分析</em></strong></p><p>我们先改下代码：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">a.x &#x3D; a &#x3D; &#123;n:2&#125;;  ---- &gt; a &#x3D; a.x &#x3D; &#123;n:2&#125;;</span></pre></td></tr></table></figure><p>改完之后会发现，无论是先给a赋值还是先给 a.x 赋值结果都是一样的。</p><p>查了一些资料后得知，<code>等式中.的优先级是最高的</code>。</p><p>所以上题中，</p><ol><li><p>a.x无论是先赋值还是后赋值都会首先被创建出来，</p></li><li><p>然后执行赋值操作 a.x 指向 {n:2}</p></li><li><p>然后再执行赋值操作，a 指向 {n:2}。此时，a新指向的对象中没有 x 这个属性，所以 a.x 输出 undefined</p></li></ol><p><strong><em>深度解析</em></strong></p><p><code>JS会把变量存到栈中，而对象则会存在堆中。</code></p><ol><li><p>第一行代码，变量 a 的指针指向堆栈；</p></li><li><p>第二行代码： a.x = a = {n:2}, 堆1中的变量的 x 变量指向堆2中的{n:2}, 接着给 a 赋值{n:2}, a的指针被改变指向堆2，然后<br>堆1没有被指针指向，被GC回收，因此输出的 a.x 是 undefined 而 a 的值是{n:2}。</p></li></ol>]]></content>
-      
-      
-      <categories>
-          
-          <category> JavaScript </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> JavaScript </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>暂时性死区和作用域</title>
-      <link href="/posts/3495248571/"/>
-      <url>/posts/3495248571/</url>
-      
-        <content type="html"><![CDATA[<h2 id="暂时性死区和作用域"><a href="#暂时性死区和作用域" class="headerlink" title="暂时性死区和作用域"></a>暂时性死区和作用域</h2><h3 id="暂时性死区"><a href="#暂时性死区" class="headerlink" title="暂时性死区"></a>暂时性死区</h3><p>在代码块内，使用<code>let</code>和<code>const</code>声明变量之前，该变量读是不可用的，这在语法上，称为<code>暂时性死区</code>。</p>]]></content>
       
       
       <categories>
@@ -654,19 +604,6 @@
     
     
     <entry>
-      <title>页面的DOMContentLoaded事件</title>
-      <link href="/posts/503882416/"/>
-      <url>/posts/503882416/</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>JavaScript中的事件循环</title>
       <link href="/posts/3084422494/"/>
       <url>/posts/3084422494/</url>
@@ -736,19 +673,6 @@
             <tag> React </tag>
             
         </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>手写防抖、节流</title>
-      <link href="/posts/2442577863/"/>
-      <url>/posts/2442577863/</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-      
       
     </entry>
     
@@ -935,31 +859,6 @@
       <url>/posts/56913/</url>
       
         <content type="html"><![CDATA[<h2 id="React-memo和useMemo的使用"><a href="#React-memo和useMemo的使用" class="headerlink" title="React.memo和useMemo的使用"></a>React.memo和useMemo的使用</h2><p>在React的class Component时代，为了性能优化我们经常使用<code>pureComponent + shouldComponentUpdate</code>对组件进行深层次的控制。</p><p>到了Funciton Component时代，React也提供了<code>memo</code>和<code>useMemo</code>，以达到<code>pureComponent + shouldComponentUpdate</code>同样效果。</p><h3 id="先看个例子："><a href="#先看个例子：" class="headerlink" title="先看个例子："></a>先看个例子：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">import React, &#123; Component, memo, useMemo &#125; from &#39;react&#39;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">import &#123; Input &#125; from &#39;antd&#39;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">export default class TestMemo extends Component &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">  state &#x3D; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    firstName: &#39;x&#39;,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    lastName: &#39;f&#39;,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">  handleChange(key, value) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    this.setState(&#123; [key]: value &#125;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">  render() &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    console.log(&#39;render&#39;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    const &#123; firstName, lastName &#125; &#x3D; this.state;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    return (</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">      &lt;div&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">        &lt;Input label&#x3D;&#39;姓&#39; value&#x3D;&#123;firstName&#125; onChange&#x3D;&#123;e &#x3D;&gt; this.handleChange(&#39;firstName&#39;, e.target.value)&#125; &#x2F;&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">        &lt;Input label&#x3D;&#39;名&#39; value&#x3D;&#123;lastName&#125; onChange&#x3D;&#123;e &#x3D;&gt; this.handleChange(&#39;lastName&#39;, e.target.value)&#125; &#x2F;&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">        &lt;FristName name&#x3D;&#123;firstName&#125; &#x2F;&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">        &lt;LastName name&#x3D;&#123;lastName&#125; &#x2F;&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">      &lt;&#x2F;div&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">    )</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">function FristName(&#123;name&#125;) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">  console.log(&#39;render firstName&#39;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">  return (</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">    &lt;div&gt;&#123;name&#125;&lt;&#x2F;div&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">  )</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">function LastName(&#123;name&#125;) &#x3D;&gt; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">  console.log(&#39;render lastName&#39;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">  return (</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">    &lt;div&gt;&#123;name&#125;&lt;&#x2F;div&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">  )</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure><p>仔细分析上面的例子，不难发现，每次在父组件的两个Input输入框任意一个中输入值，两个子组件<code>FristName</code>和<code>LastName</code>都会跟着渲染，即使跟子组件并不相关的props更新了，也渲染了一遍。<code>理论上，父组件每次变化一个 state 都通过 props 传递给了子组件，那子组件就会重新执行渲染。（无论子组件有没有真正用到这个 props）</code>，这无疑是浪费的渲染。</p><h3 id="使用memo"><a href="#使用memo" class="headerlink" title="使用memo"></a>使用memo</h3><p>下面我们使用memo对<code>FirstName</code>组件进行改造：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">import &#123; memo &#125; from &#39;react&#39;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">const propsAreEqual &#x3D; function(prevProps, nextProps) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">  return prevProps.name &#x3D;&#x3D;&#x3D; nextProps;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">const FristName &#x3D; memo((&#123;name&#125;) &#x3D;&gt; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">  console.log(&#39;render firstName&#39;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">  return (</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    &lt;div&gt;&#123;name&#125;&lt;&#x2F;div&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">  )</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">&#125;, propsAreEqual);</span></pre></td></tr></table></figure><p>使用了memo改造之后，我们会发现，当改变firstName后，<code>FirstName</code>组件会跟着渲染，而当改变lastName后，在控制台里可以看到<code>render firstName</code>并没有打印，说明<code>FirstName</code>组件并没有渲染，达到了性能优化的目的。</p><h3 id="使用useMemo"><a href="#使用useMemo" class="headerlink" title="使用useMemo"></a>使用useMemo</h3><p>看上面说那个memo的例子，我们发现React.memo是需要包裹整个组件的，并且需要手动写一个方法比较那些具体的props不相同才进行re-render。</p><p>而在某些场景下，我们只是希望component的某些部分不要进行re-render，而不是整个component编剧要re-render，也就是需要局部pure的功能。</p><p><code>useMemo</code>是React自带的hooks API，基本用法如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">import &#123; useMemo &#125; from &#39;react&#39;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">const memoizedValue &#x3D; useMemo(memoizedFunction(), [memoizedParams]);</span></pre></td></tr></table></figure><p>useMemo()返回的是一个memoized值，只有当依赖项memoizedParams发生改变，才会重新调用memoizedFunction函数计算生成新的memoizedValue。memoizedParams不变时不会触发memoizedFunction函数。</p><p>需要注意的是：<code>useMemo是在render期间执行的，所以不能进行一些副作用操作，比如网络请求等。</code></p><p>如果没有提供依赖项即memoizedParams，则每次都会调用memoizedFunction函数计算memoizedValue。</p><p>回到我们的例子，我们希望只有当lastName发生改变时，才会去重新渲染LastName组件，即用useMemo包裹return部分渲染的逻辑，下面是使用useMemo改造后的LastName组件：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">function FristName(&#123;name&#125;) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">  console.log(&#39;render firstName out useMemo&#39;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">  return useMemo(() &#x3D;&gt; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    console.log(&#39;render firstName in useMemo&#39;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    return (</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">      &lt;div&gt;&#123;name&#125;&lt;&#x2F;div&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    )</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">  &#125;, [name]);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure><p>再次运行时，我们会发现，<code>render firstName out useMemo</code>一直会打印，当我们没有改变firstName时，在useMemo函数中的这句<code>render firstName in useMemo</code>并不会打印，只有改变了firstName的值时，才会打印。这就是useMemo<code>局部pure</code>的体现了。</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> React </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> React </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>React Hooks之useCallback</title>
-      <link href="/posts/6797/"/>
-      <url>/posts/6797/</url>
-      
-        <content type="html"><![CDATA[<h2 id="React-Hooks之useCallback"><a href="#React-Hooks之useCallback" class="headerlink" title="React Hooks之useCallback"></a>React Hooks之useCallback</h2><p>useCallback</p>]]></content>
       
       
       <categories>
