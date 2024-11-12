@@ -13,6 +13,11 @@
         .puzzle-piece {
             cursor: pointer;
             position: relative;
+            border: 1px solid #ccc;
+            touch-action: none; /* 禁用移动端默认触摸操作 */
+        }
+        .puzzle-piece.dragging {
+            opacity: 0.5;
         }
         #message {
             text-align: center;
@@ -34,52 +39,61 @@ window.onload = function () {
     const cols = 10; // 列数
     const width = 400;
     const height = 400;
+    
     puzzleContainer.style.width = `${width}px`;
     puzzleContainer.style.height = `${height}px`;
     puzzleContainer.style.gridTemplateColumns = `repeat(${cols}, ${width/cols}px)`;
     puzzleContainer.style.gridTemplateRows = `repeat(${rows}, ${height/rows}px)`;
-    // grid-template-rows: repeat(4, 100px);
-    const pieces = [];
-    let emptyPiece = { index: -1 };
 
-    // 创建并切割图像为小块
+    const pieces = [];
+    const pieceElements = [];
+
+    // 创建拼图
     function createPuzzle() {
         const img = new Image();
         img.src = imageSrc;
         img.width = width;
         img.height = height;
-        
+
         img.onload = function () {
             const pieceWidth = width / cols;
             const pieceHeight = height / rows;
-            console.log(pieceHeight, pieceWidth)
+            console.log(pieceHeight, pieceWidth);
+
             for (let row = 0; row < rows; row++) {
-              for (let col = 0; col < cols; col++) {
-                  const piece = document.createElement('div');
-                  piece.classList.add('puzzle-piece');
-                  piece.style.width = `${pieceWidth}px`;
-                  piece.style.height = `${pieceHeight}px`;
-                  piece.style.backgroundSize = `${width}px ${height}px`;
-                  piece.style.backgroundImage = `url(${imageSrc})`;
-                  piece.style.backgroundPosition = `-${col * pieceWidth}px -${row * pieceHeight}px`;
-                  piece.dataset.index = row * cols + col;
+                for (let col = 0; col < cols; col++) {
+                    const piece = document.createElement('div');
+                    piece.classList.add('puzzle-piece');
+                    piece.style.width = `${pieceWidth}px`;
+                    piece.style.height = `${pieceHeight}px`;
+                    piece.style.backgroundSize = `${width}px ${height}px`;
+                    piece.style.backgroundImage = `url(${imageSrc})`;
+                    piece.style.backgroundPosition = `-${col * pieceWidth}px -${row * pieceHeight}px`;
+                    piece.dataset.index = row * cols + col;
 
-                  piece.draggable = true;
-                  piece.addEventListener('dragstart', handleDragStart);
-                  piece.addEventListener('dragover', handleDragOver);
-                  piece.addEventListener('drop', handleDrop);
+                    // Desktop: 设置拖拽事件
+                    piece.draggable = true;
+                    piece.addEventListener('dragstart', handleDragStart);
+                    piece.addEventListener('dragover', handleDragOver);
+                    piece.addEventListener('drop', handleDrop);
+                    piece.addEventListener('dragend', handleDragEnd);
 
-                  pieces.push(piece);
-                  puzzleContainer.appendChild(piece);
-              }
+                    // Mobile: 设置触摸事件
+                    piece.addEventListener('touchstart', handleTouchStart);
+                    piece.addEventListener('touchmove', handleTouchMove);
+                    piece.addEventListener('touchend', handleTouchEnd);
+
+                    pieces.push(piece);
+                    puzzleContainer.appendChild(piece);
+                    pieceElements.push(piece);
+                }
             }
 
-            // 随机打乱拼图
             shufflePuzzle();
         };
     }
 
-    // 打乱拼图块
+    // 打乱拼图
     function shufflePuzzle() {
         const shuffled = [...pieces];
         shuffled.sort(() => Math.random() - 0.5);
@@ -89,25 +103,24 @@ window.onload = function () {
         });
     }
 
-    // 处理拖拽开始
+    // 处理桌面端拖拽开始
     function handleDragStart(e) {
+        e.target.classList.add('dragging');
         e.dataTransfer.setData('text/plain', e.target.dataset.index);
-        e.target.style.opacity = '0.5';
     }
 
-    // 处理拖拽进入
+    // 处理桌面端拖拽进入
     function handleDragOver(e) {
         e.preventDefault();
         e.target.style.border = '2px dashed #000';
     }
 
-    // 处理拖拽结束
+    // 处理桌面端拖拽结束
     function handleDragEnd(e) {
-        e.target.style.opacity = '1';
+        e.target.classList.remove('dragging');
         e.target.style.border = 'none';
     }
 
-    // 处理放置事件
     function handleDrop(e) {
         e.preventDefault();
         const draggedIndex = e.dataTransfer.getData('text/plain');
@@ -118,17 +131,57 @@ window.onload = function () {
         }
     }
 
-    // 交换拼图块位置
+    // 处理触摸事件开始
+    let touchStartX, touchStartY, touchPiece;
+
+    function handleTouchStart(e) {
+        touchPiece = e.target;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchPiece.classList.add('dragging');
+    }
+
+    // 处理触摸事件移动
+    function handleTouchMove(e) {
+        if (!touchPiece) return;
+        
+        const deltaX = e.touches[0].clientX - touchStartX;
+        const deltaY = e.touches[0].clientY - touchStartY;
+
+        touchPiece.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+    }
+
+    // 处理触摸事件结束
+    function handleTouchEnd(e) {
+        if (!touchPiece) return;
+        
+        // 获取最终位置
+        const deltaX = e.changedTouches[0].clientX - touchStartX;
+        const deltaY = e.changedTouches[0].clientY - touchStartY;
+
+        // 判断是否放到目标位置
+        const targetPiece = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        if (targetPiece && targetPiece.classList.contains('puzzle-piece')) {
+            // 交换位置
+            swapPieces(touchPiece.dataset.index, targetPiece.dataset.index);
+        }
+
+        // 复位样式
+        touchPiece.classList.remove('dragging');
+        touchPiece.style.transform = '';
+    }
+
+    // 交换拼图块的位置
     function swapPieces(fromIndex, toIndex) {
         const fromPiece = pieces[fromIndex];
         const toPiece = pieces[toIndex];
 
-        // 交换DOM位置
+        // 交换拼图块在DOM中的位置
         const tempOrder = fromPiece.style.order;
         fromPiece.style.order = toPiece.style.order;
         toPiece.style.order = tempOrder;
 
-        // 检查是否完成拼图
+        // 检查拼图是否完成
         checkCompletion();
     }
 
