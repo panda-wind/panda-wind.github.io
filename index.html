@@ -3,149 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XiXi</title>
+    <title>puzzle-container</title>
     <style>
-      .row {
-        display: flex;
-      }
-        .cell {
-            width: 10px;
-            height: 10px;
-            border: 1px solid #ccc;
-            /* display: inline-block; */
+        .puzzle-container {
+            display: grid;
+            gap: 2px;
+            margin: 50px auto;
+        }
+        .puzzle-piece {
+            cursor: pointer;
+            position: relative;
+        }
+        #message {
             text-align: center;
-            vertical-align: middle;
-            line-height: 10px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="minesweeper"></div>
 
-    <script>
-        let flag = false;
-        const ROWS = 30;
-        const COLS = 30;
-        const MINE_COUNT = 250;
+<div id="message">start</div>
+<div class="puzzle-container" id="puzzle-container"></div>
 
-        const grid = [];
-        const boom = [
-          [3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10],[11,11],  // \
-          [3,11],[4,10],[5,9],[6,8],[7,7],[8,6],[9,5],[10,4],[11,3], // /
-          [3,15],[4,16],[5,17],[6,18],[7,19],[8,20],[9,21],[10,22], [11,23], // \
-          [3,23],[4,22],[5,21],[6,20],[7,19],[8,18],[9,17],[10,16], [11,15], // /
-          [14,3],[14,4],[14,5],[15,4],[16,4],[17,4],[18,4],[19,4],[20,4],[21,4],[22,4],[23,4],[24,4],[25,4],[25,3],[25,5], // I
-          [14,9],[15,8],[16,7],[17,7],[18,7],[19,7],[20,7],[21,7],[22,8],[23,9],[24,10],[25,11],[14,10],[15,11],
-          [16,12],[26,12],[25,13],[24,14],[23,15],[22,16],[21,17],[20,17],[19,17],[18,17],[15,13],[14,14],[14,15],[15,16],[16,17],[17,17], // ❤️
-          [14,20],[15,20],[16,20],[17,20],[18,20],[19,20],[20,20],[21,20],[22,20],[23,20],[24,20],[25,21],[25,22],[25,23],[25,24],
-          [24,25],[23,25],[22,25],[21,25],[20,25],[19,25],[18,25],[17,25],[16,25],[15,25],[14,25]  // U
-        ];
-        // 创建扫雷格子
-        const minesweeperContainer = document.getElementById('minesweeper');
-        for (let i = 0; i < ROWS; i++) {
-            const row = document.createElement('div');
-            row.classList.add('row');
-            // const row = [];
-            const rowEl = [];
-            for (let j = 0; j < COLS; j++) {
-                const cell = document.createElement('div');
-                // if (boom.find(d => d[0] === i && d[1] === j)) {
-                //   // cell.style="background: #000";
-                //   cell.textContent = '💣'
-                // } else {
-                //   cell.textContent = i + ','+ j;
-                // }
-                cell.classList.add('cell');
-                cell.dataset.row = i;
-                cell.dataset.col = j;
-                cell.addEventListener('click', handleCellClick);
-                row.appendChild(cell);
-                rowEl.push({ element: cell, isMine: false, isRevealed: false });
+<script>
+window.onload = function () {
+    const puzzleContainer = document.getElementById('puzzle-container');
+    const message = document.getElementById('message');
+    const imageSrc = './img/xixi.jpg'; // 替换为你的图片路径
+    const rows = 10; // 行数
+    const cols = 10; // 列数
+    const width = 400;
+    const height = 400;
+    puzzleContainer.style.width = `${width}px`;
+    puzzleContainer.style.height = `${height}px`;
+    puzzleContainer.style.gridTemplateColumns = `repeat(${cols}, ${width/cols}px)`;
+    puzzleContainer.style.gridTemplateRows = `repeat(${rows}, ${height/rows}px)`;
+    // grid-template-rows: repeat(4, 100px);
+    const pieces = [];
+    let emptyPiece = { index: -1 };
+
+    // 创建并切割图像为小块
+    function createPuzzle() {
+        const img = new Image();
+        img.src = imageSrc;
+        img.width = width;
+        img.height = height;
+        
+        img.onload = function () {
+            const pieceWidth = width / cols;
+            const pieceHeight = height / rows;
+            console.log(pieceHeight, pieceWidth)
+            for (let row = 0; row < rows; row++) {
+              for (let col = 0; col < cols; col++) {
+                  const piece = document.createElement('div');
+                  piece.classList.add('puzzle-piece');
+                  piece.style.width = `${pieceWidth}px`;
+                  piece.style.height = `${pieceHeight}px`;
+                  piece.style.backgroundSize = `${width}px ${height}px`;
+                  piece.style.backgroundImage = `url(${imageSrc})`;
+                  piece.style.backgroundPosition = `-${col * pieceWidth}px -${row * pieceHeight}px`;
+                  piece.dataset.index = row * cols + col;
+
+                  piece.draggable = true;
+                  piece.addEventListener('dragstart', handleDragStart);
+                  piece.addEventListener('dragover', handleDragOver);
+                  piece.addEventListener('drop', handleDrop);
+
+                  pieces.push(piece);
+                  puzzleContainer.appendChild(piece);
+              }
             }
-            grid.push(rowEl);
-            minesweeperContainer.appendChild(row);
-        }
 
-        // 放置地雷
-        const placedMines = boom.length;
-        boom.forEach(item => {
-          if (!grid[item[0]][item[1]].isMine) {
-            grid[item[0]][item[1]].isMine = true;
-          }
+            // 随机打乱拼图
+            shufflePuzzle();
+        };
+    }
+
+    // 打乱拼图块
+    function shufflePuzzle() {
+        const shuffled = [...pieces];
+        shuffled.sort(() => Math.random() - 0.5);
+        shuffled.forEach((piece, index) => {
+            puzzleContainer.appendChild(piece);
+            piece.style.order = index;
         });
-        // while (placedMines < MINE_COUNT) {
-        //     const randRow = Math.floor(Math.random() * ROWS);
-        //     const randCol = Math.floor(Math.random() * COLS);
-        //     if (!grid[randRow][randCol].isMine) {
-        //         grid[randRow][randCol].isMine = true;
-        //         placedMines++;
-        //     }
-        // }
+    }
 
-        // 处理点击事件
-        function handleCellClick(event) {
-            const row = parseInt(event.target.dataset.row);
-            const col = parseInt(event.target.dataset.col);
-            const cell = grid[row][col];
-            if (flag) {
-              return;
-            }
-            if (!cell.isRevealed) {
-                if (cell.isMine) {
-                    // event.target.textContent = '💣'; // 点击到地雷
-                    // boo 
-                    document.querySelectorAll('.cell').forEach(i => {
-                      const { row, col } = i.dataset;
-                      console.log(row, col);
-                      if (boom.find(b => b[0] == row && b[1] == col)) {
-                        console.log(i)
-                        i.textContent = '💣';
-                      } else {
-                        i.textContent = '';
-                      }
-                    });
-                    flag = true;
-                } else {
-                    const adjacentMines = countAdjacentMines(row, col);
-                    event.target.textContent = adjacentMines === 0 ? '' : adjacentMines;
-                    cell.isRevealed = true;
-                    if (adjacentMines === 0) {
-                        // 如果周围没有地雷，则递归展开周围的空白格子
-                        expandEmptyCells(row, col);
-                    }
-                }
-            }
-        }
+    // 处理拖拽开始
+    function handleDragStart(e) {
+        e.dataTransfer.setData('text/plain', e.target.dataset.index);
+        e.target.style.opacity = '0.5';
+    }
 
-        // 计算指定格子周围的地雷数量
-        function countAdjacentMines(row, col) {
-            let count = 0;
-            for (let i = Math.max(0, row - 1); i <= Math.min(ROWS - 1, row + 1); i++) {
-                for (let j = Math.max(0, col - 1); j <= Math.min(COLS - 1, col + 1); j++) {
-                    if (!(i === row && j === col) && grid[i][j].isMine) {
-                        count++;
-                    }
-                }
-            }
-            return count;
-        }
+    // 处理拖拽进入
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.target.style.border = '2px dashed #000';
+    }
 
-        // 展开周围的空白格子
-        function expandEmptyCells(row, col) {
-            for (let i = Math.max(0, row - 1); i <= Math.min(ROWS - 1, row + 1); i++) {
-                for (let j = Math.max(0, col - 1); j <= Math.min(COLS - 1, col + 1); j++) {
-                    const cell = grid[i][j];
-                    if (!cell.isRevealed && !cell.isMine) {
-                        const adjacentMines = countAdjacentMines(i, j);
-                        cell.isRevealed = true;
-                        cell.element.textContent = adjacentMines === 0 ? '' : adjacentMines;
-                        if (adjacentMines === 0) {
-                            expandEmptyCells(i, j);
-                        }
-                    }
-                }
-            }
+    // 处理拖拽结束
+    function handleDragEnd(e) {
+        e.target.style.opacity = '1';
+        e.target.style.border = 'none';
+    }
+
+    // 处理放置事件
+    function handleDrop(e) {
+        e.preventDefault();
+        const draggedIndex = e.dataTransfer.getData('text/plain');
+        const droppedIndex = e.target.dataset.index;
+
+        if (draggedIndex !== droppedIndex) {
+            swapPieces(draggedIndex, droppedIndex);
         }
-    </script>
+    }
+
+    // 交换拼图块位置
+    function swapPieces(fromIndex, toIndex) {
+        const fromPiece = pieces[fromIndex];
+        const toPiece = pieces[toIndex];
+
+        // 交换DOM位置
+        const tempOrder = fromPiece.style.order;
+        fromPiece.style.order = toPiece.style.order;
+        toPiece.style.order = tempOrder;
+
+        // 检查是否完成拼图
+        checkCompletion();
+    }
+
+    // 检查拼图是否完成
+    function checkCompletion() {
+        const isComplete = pieces.every((piece, index) => parseInt(piece.style.order) === index);
+        if (isComplete) {
+            message.textContent = '恭喜你完成！';
+        }
+    }
+
+    // 开始游戏
+    createPuzzle();
+};
+
+</script>
 </body>
 </html>
